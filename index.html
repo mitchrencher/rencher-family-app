@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Before Ben Leaves — Rencher Family</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B1A2E;
+    --bg-grad: linear-gradient(170deg, #0B1A2E 0%, #162D50 40%, #1A3356 70%, #0D2240 100%);
+    --card: rgba(255,255,255,0.05);
+    --card-border: rgba(255,255,255,0.08);
+    --text: #E8E0D8;
+    --text-muted: #8CA0BA;
+    --text-dim: #5A7A9E;
+    --accent: #D4A574;
+    --accent-glow: rgba(212,165,116,0.12);
+    --warm: #C08552;
+  }
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; -webkit-font-smoothing: antialiased;
+  }
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* WELCOME */
+  #welcome {
+    flex-direction: column; align-items: center;
+    background: var(--bg-grad);
+    padding: 0 20px 60px; position: relative; overflow: hidden;
+  }
+  #welcome::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.25), transparent),
+      radial-gradient(1px 1px at 55% 8%, rgba(255,255,255,0.2), transparent),
+      radial-gradient(1px 1px at 78% 42%, rgba(255,255,255,0.15), transparent),
+      radial-gradient(1.5px 1.5px at 35% 65%, rgba(255,255,255,0.2), transparent),
+      radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.12), transparent),
+      radial-gradient(1px 1px at 8% 88%, rgba(255,255,255,0.15), transparent);
+  }
+  .hero-photo-wrap {
+    width: 100%; max-width: 520px; margin-top: 36px;
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    border: 2px solid rgba(255,255,255,0.06);
+    position: relative; z-index: 1;
+  }
+  .hero-photo-wrap img { width: 100%; display: block; }
+  .hero-photo-wrap .overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(11,26,46,0.92));
+    padding: 50px 24px 22px;
+  }
+  .hero-photo-wrap h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 4.5vw, 36px);
+    font-weight: 400; letter-spacing: 0.02em; color: #E8E0D8;
+  }
+  .tagline {
+    font-style: italic; color: var(--text-muted);
+    font-size: clamp(13px, 2.2vw, 16px);
+    margin: 20px 0 40px; text-align: center;
+    max-width: 440px; line-height: 1.7; z-index: 1;
+  }
+  .who-label {
+    color: var(--accent); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 18px; z-index: 1;
+  }
+  .name-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px; max-width: 540px; width: 100%;
+    margin-bottom: 36px; z-index: 1;
+  }
+  .name-btn {
+    padding: 15px 10px; border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    cursor: pointer; font-family: 'Playfair Display', serif;
+    font-size: 15px; color: var(--text);
+    transition: all 0.25s; position: relative;
+  }
+  .name-btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+  .name-btn.done { border-color: rgba(168,212,160,0.35); }
+  .name-btn .check { position: absolute; top: 5px; right: 7px; font-size: 10px; color: #A8D4A0; }
+  .summary-btn {
+    padding: 13px 30px; border-radius: 8px;
+    border: 1.5px solid rgba(212,165,116,0.5);
+    background: transparent; cursor: pointer;
+    font-family: 'Playfair Display', serif;
+    font-size: 14px; color: var(--accent);
+    font-weight: 600; letter-spacing: 0.05em;
+    transition: all 0.25s; z-index: 1;
+  }
+  .summary-btn:hover { background: var(--accent-glow); }
+
+  /* QUESTIONS */
+  #questions {
+    flex-direction: column; align-items: center; justify-content: center;
+    background: var(--bg-grad); padding: 50px 20px 40px;
+  }
+  .progress-bar {
+    position: fixed; top: 0; left: 0; right: 0; height: 3px;
+    background: rgba(255,255,255,0.05); z-index: 10;
+  }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--warm)); transition: width 0.4s ease; }
+  .q-member-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+  .q-counter { font-size: 12px; color: var(--text-dim); margin-bottom: 28px; }
+  .q-card {
+    max-width: 540px; width: 100%; background: var(--card);
+    backdrop-filter: blur(12px); border-radius: 16px; padding: 36px 28px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3); border: 1px solid var(--card-border);
+  }
+  .q-accent { width: 36px; height: 3px; border-radius: 2px; margin-bottom: 22px; opacity: 0.8; }
+  .q-prompt {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(17px, 3.2vw, 22px);
+    font-weight: 400; line-height: 1.55; margin-bottom: 24px;
+  }
+  .q-textarea {
+    width: 100%; padding: 16px; border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.2);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 15px; color: var(--text); line-height: 1.7;
+    resize: vertical; outline: none; transition: border-color 0.3s;
+  }
+  .q-textarea:focus { border-color: var(--accent); }
+  .q-textarea::placeholder { color: var(--text-dim); }
+  .q-nav { display: flex; gap: 14px; margin-top: 28px; }
+  .btn-back {
+    padding: 11px 22px; border-radius: 8px;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04); cursor: pointer;
+    font-family: 'Playfair Display', serif;
+    font-size: 14px; color: var(--text-muted); transition: all 0.2s;
+  }
+  .btn-next, .btn-finish {
+    padding: 11px 28px; border-radius: 8px; border: none;
+    cursor: pointer; font-family: 'Playfair Display', serif;
+    font-size: 14px; font-weight: 600; letter-spacing: 0.04em; transition: all 0.2s;
+  }
+  .btn-next { background: linear-gradient(135deg, var(--accent), var(--warm)); color: #0B1A2E; }
+  .btn-finish { background: linear-gradient(135deg, #A8D4A0, #7BA873); color: #0B1A2E; }
+
+  /* SUMMARY */
+  #summary { flex-direction: column; background: var(--bg-grad); padding: 30px 20px 80px; }
+  .summary-inner { max-width: 680px; margin: 0 auto; width: 100%; }
+  .back-link {
+    background: none; border: none; cursor: pointer;
+    font-family: 'Playfair Display', serif; font-size: 14px;
+    color: var(--text-muted); padding: 0; margin-bottom: 16px;
+  }
+  .summary-header { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+  .summary-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(212,165,116,0.25); }
+  .summary-title { font-family: 'Playfair Display', serif; font-size: clamp(22px, 4vw, 32px); font-weight: 400; }
+  .summary-sub { font-style: italic; color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+  .status-bar {
+    background: var(--card); border-radius: 10px; padding: 12px 16px;
+    margin: 16px 0 24px; border: 1px solid var(--card-border);
+    font-size: 13px; color: var(--text-muted);
+  }
+  .tabs { display: flex; gap: 4px; margin-bottom: 28px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 10px 16px; border-radius: 8px; border: none;
+    background: transparent; cursor: pointer;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px; color: var(--text-muted); transition: all 0.2s;
+  }
+  .tab-btn.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
+  .expand-section {
+    margin-bottom: 12px; background: var(--card); border-radius: 12px;
+    border: 1px solid var(--card-border); overflow: hidden;
+  }
+  .expand-header {
+    width: 100%; padding: 16px 18px; background: none;
+    border: none; cursor: pointer; display: flex;
+    align-items: center; gap: 12px; text-align: left;
+  }
+  .expand-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .expand-label { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--text); flex: 1; line-height: 1.45; }
+  .expand-arrow { font-size: 11px; color: var(--text-dim); transition: transform 0.2s; }
+  .expand-arrow.open { transform: rotate(90deg); }
+  .expand-body { padding: 0 18px 16px; }
+  .answer-card {
+    padding: 12px 14px; margin-bottom: 6px; border-radius: 8px;
+    background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.03);
+  }
+  .answer-from { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px; }
+  .answer-text { font-size: 14px; line-height: 1.65; white-space: pre-wrap; }
+  .goals-card {
+    background: var(--card); border-radius: 14px; padding: 28px 24px;
+    border: 1px solid var(--card-border);
+  }
+  .goals-accent { width: 36px; height: 3px; background: var(--accent); border-radius: 2px; margin-bottom: 18px; }
+  .goals-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; margin-bottom: 6px; }
+  .goals-sub { font-size: 12px; color: var(--text-dim); font-style: italic; margin-bottom: 22px; }
+  .goal-row { padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 14px; line-height: 1.6; }
+  .goal-name { font-weight: 700; font-size: 12px; }
+  .messages-group {
+    margin-bottom: 20px; background: var(--card); border-radius: 14px;
+    padding: 24px 22px; border: 1px solid var(--card-border);
+  }
+  .messages-accent { width: 28px; height: 3px; border-radius: 2px; margin-bottom: 14px; opacity: 0.7; }
+  .messages-for { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 400; margin-bottom: 16px; }
+  .msg-card {
+    padding: 12px 14px; margin-bottom: 8px; border-radius: 8px;
+    background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.04);
+  }
+  .msg-text { font-size: 14px; line-height: 1.65; white-space: pre-wrap; font-style: italic; }
+  .empty-note { color: var(--text-dim); font-style: italic; text-align: center; margin-top: 40px; font-size: 14px; }
+
+  /* DONE */
+  #done-screen {
+    flex-direction: column; align-items: center; justify-content: center;
+    background: var(--bg-grad); text-align: center; padding: 40px 20px;
+  }
+  .done-emoji { font-size: 48px; margin-bottom: 20px; }
+  .done-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 400; margin-bottom: 12px; }
+  .done-sub { color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 32px; max-width: 400px; }
+  .done-btn {
+    padding: 13px 30px; border-radius: 8px;
+    border: 1.5px solid var(--card-border);
+    background: var(--card); cursor: pointer;
+    font-family: 'Playfair Display', serif;
+    font-size: 14px; color: var(--text); transition: all 0.25s; margin: 6px;
+  }
+  .done-btn:hover { background: rgba(255,255,255,0.08); }
+
+  /* LOADING */
+  #loading {
+    justify-content: center; align-items: center;
+    background: var(--bg); font-family: 'Playfair Display', serif;
+    color: var(--text-muted); font-size: 16px;
+  }
+
+  .saving-indicator {
+    position: fixed; top: 12px; right: 16px; z-index: 100;
+    padding: 8px 16px; border-radius: 8px;
+    background: rgba(168,212,160,0.15); color: #A8D4A0;
+    font-size: 12px; font-family: 'Source Serif 4', serif;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .saving-indicator.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="saving-indicator" id="savingIndicator">Saving…</div>
+
+<div id="loading" class="screen active">Loading…</div>
+
+<div id="welcome" class="screen">
+  <div class="hero-photo-wrap">
+    <img src="family-photo.jpg" alt="Rencher Family">
+    <div class="overlay"><h1>Before Ben Leaves</h1></div>
+  </div>
+  <p class="tagline">What we want each other to know — and what we want to become — in the next 15–18 months.</p>
+  <p class="who-label">Who's answering?</p>
+  <div class="name-grid" id="nameGrid"></div>
+  <button class="summary-btn" onclick="showSummary()">View Family Summary →</button>
+</div>
+
+<div id="questions" class="screen">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="q-member-label" id="qMemberLabel"></div>
+  <div class="q-counter" id="qCounter"></div>
+  <div class="q-card">
+    <div class="q-accent" id="qAccent"></div>
+    <div class="q-prompt" id="qPrompt"></div>
+    <textarea class="q-textarea" id="qTextarea" rows="5" placeholder="Type your answer here…"></textarea>
+  </div>
+  <div class="q-nav" id="qNav"></div>
+</div>
+
+<div id="done-screen" class="screen">
+  <div class="done-emoji">✨</div>
+  <div class="done-title">Answers Saved!</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div>
+    <button class="done-btn" onclick="goHome()">← Back Home</button>
+    <button class="done-btn" onclick="showSummary()">View Summary →</button>
+  </div>
+</div>
+
+<div id="summary" class="screen">
+  <div class="summary-inner" id="summaryContent"></div>
+</div>
+
+<script>
+  // ========== CONFIG ==========
+  const DB_URL = "https://rencher-family-default-rtdb.firebaseio.com";
+  // ============================
+
+  const FAMILY = ["Ben", "Mom", "Dad", "Lydia", "Rachel", "Matthew", "Rebecca", "Abby"];
+  const COLORS = {
+    Ben: "#E8B87A", Mom: "#D49BA6", Dad: "#7AAED4", Lydia: "#A8D4A0",
+    Rachel: "#D4C07A", Matthew: "#7AD4C8", Rebecca: "#C4A0D4", Abby: "#D4A07A"
+  };
+
+  function getQuestions(member) {
+    const others = FAMILY.filter(f => f !== member);
+    return [
+      { id: "accomplish", prompt: "In the next 15–18 months, what do you want to accomplish?" },
+      { id: "memory", prompt: "What is your favorite family memory?" },
+      { id: "trip", prompt: "What is your favorite family trip?" },
+      { id: "as_family", prompt: "Before Ben leaves, I want to _________ as a family." },
+      { id: "want_to_know", prompt: "Before Ben leaves, I want to know…" },
+      ...others.map(o => ({
+        id: "know_" + o.toLowerCase(),
+        prompt: "Before Ben leaves, I want " + o + " to know\u2026"
+      }))
+    ];
+  }
+
+  let allData = {};
+  let currentMember = null;
+  let currentAnswers = {};
+  let currentQs = [];
+  let qIdx = 0;
+
+  // ---- Firebase REST API ----
+  async function loadAll() {
+    try {
+      const res = await fetch(DB_URL + "/responses.json");
+      const data = await res.json();
+      allData = data || {};
+      console.log("Loaded data:", Object.keys(allData));
+    } catch(e) { console.error("Load error:", e); allData = {}; }
+  }
+
+  async function saveMember(name, answers) {
+    const indicator = document.getElementById('savingIndicator');
+    indicator.classList.add('show');
+    allData[name] = answers;
+    try {
+      await fetch(DB_URL + "/responses/" + name + ".json", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(answers)
+      });
+    } catch(e) { console.error("Save error:", e); }
+    setTimeout(() => indicator.classList.remove('show'), 1200);
+  }
+
+  // ---- Screens ----
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  async function goHome() { await loadAll(); renderWelcome(); showScreen('welcome'); }
+
+  // ---- Welcome ----
+  function renderWelcome() {
+    const grid = document.getElementById('nameGrid');
+    grid.innerHTML = FAMILY.map(name => {
+      const done = !!allData[name];
+      const cls = done ? 'name-btn done' : 'name-btn';
+      const style = done ? 'border-color:' + COLORS[name] + '44;color:' + COLORS[name] : '';
+      return '<button class="' + cls + '" onclick="startQuestions(\'' + name + '\')" style="' + style + '">'
+        + name + (done ? '<span class="check">✓</span>' : '') + '</button>';
+    }).join('');
+  }
+
+  // ---- Questions ----
+  async function startQuestions(name) {
+    await loadAll();
+    currentMember = name;
+    currentAnswers = allData[name] ? Object.assign({}, allData[name]) : {};
+    currentQs = getQuestions(name);
+    qIdx = 0;
+    renderQuestion();
+    showScreen('questions');
+  }
+
+  function renderQuestion() {
+    const q = currentQs[qIdx];
+    const color = COLORS[currentMember];
+    const progress = ((qIdx + 1) / currentQs.length) * 100;
+
+    document.getElementById('progressFill').style.width = progress + '%';
+    document.getElementById('qMemberLabel').textContent = currentMember + "'s Answers";
+    document.getElementById('qMemberLabel').style.color = color;
+    document.getElementById('qCounter').textContent = (qIdx + 1) + ' of ' + currentQs.length;
+    document.getElementById('qAccent').style.background = color;
+    document.getElementById('qPrompt').textContent = q.prompt;
+
+    var ta = document.getElementById('qTextarea');
+    ta.value = currentAnswers[q.id] || '';
+    ta.onfocus = function() { ta.style.borderColor = color; };
+    ta.onblur = function() { ta.style.borderColor = 'rgba(255,255,255,0.1)'; };
+    ta.oninput = function() { currentAnswers[q.id] = ta.value; };
+
+    var nav = document.getElementById('qNav');
+    var html = '';
+    if (qIdx > 0) html += '<button class="btn-back" onclick="prevQ()">\u2190 Back</button>';
+    if (qIdx < currentQs.length - 1) {
+      html += '<button class="btn-next" onclick="nextQ()">Next \u2192</button>';
+    } else {
+      html += '<button class="btn-finish" onclick="finishQuestions()">Save My Answers \u2713</button>';
+    }
+    nav.innerHTML = html;
+    setTimeout(function() { ta.focus(); }, 100);
+  }
+
+  function nextQ() { if (qIdx < currentQs.length - 1) { qIdx++; renderQuestion(); } }
+  function prevQ() { if (qIdx > 0) { qIdx--; renderQuestion(); } }
+
+  async function finishQuestions() {
+    await saveMember(currentMember, currentAnswers);
+    document.getElementById('doneSub').textContent =
+      'Thank you, ' + currentMember + '. Your answers have been saved and will be part of the family summary.';
+    showScreen('done-screen');
+  }
+
+  // ---- Summary ----
+  async function showSummary() { await loadAll(); renderSummary('questions'); showScreen('summary'); }
+
+  function renderSummary(tab) {
+    var responded = FAMILY.filter(function(m) { return allData[m]; });
+    var pending = FAMILY.filter(function(m) { return !allData[m]; });
+    var sharedQs = [
+      { id: "accomplish", label: "In the next 15\u201318 months, what do you want to accomplish?" },
+      { id: "memory", label: "What is your favorite family memory?" },
+      { id: "trip", label: "What is your favorite family trip?" },
+      { id: "as_family", label: "Before Ben leaves, I want to _________ as a family." },
+      { id: "want_to_know", label: "Before Ben leaves, I want to know…" }
+    ];
+
+    var html = '<button class="back-link" onclick="goHome()">\u2190 Back</button>'
+      + '<div class="summary-header">'
+      + '<img src="family-photo.jpg" alt="" class="summary-avatar">'
+      + '<div><div class="summary-title">The Rencher Family</div>'
+      + '<div class="summary-sub">Before Ben\'s Mission</div></div></div>'
+      + '<div class="status-bar"><strong>' + responded.length + '/' + FAMILY.length + '</strong> responded'
+      + (pending.length > 0 ? ' \u2014 waiting on ' + pending.join(', ') : '') + '</div>'
+      + '<div class="tabs">'
+      + '<button class="tab-btn ' + (tab === 'questions' ? 'active' : '') + '" onclick="renderSummaryTab(\'questions\')">All Answers</button>'
+      + '<button class="tab-btn ' + (tab === 'goals' ? 'active' : '') + '" onclick="renderSummaryTab(\'goals\')">Family Goals</button>'
+      + '<button class="tab-btn ' + (tab === 'messages' ? 'active' : '') + '" onclick="renderSummaryTab(\'messages\')">Messages To Each</button>'
+      + '</div>';
+
+    if (tab === 'questions') {
+      sharedQs.forEach(function(q) {
+        var hasAny = responded.some(function(m) { return allData[m][q.id] && allData[m][q.id].trim(); });
+        var answers = '';
+        responded.forEach(function(m) {
+          var ans = allData[m][q.id];
+          if (ans && ans.trim()) {
+            answers += '<div class="answer-card"><div class="answer-from" style="color:' + COLORS[m] + '">' + m + '</div>'
+              + '<div class="answer-text">' + esc(ans) + '</div></div>';
+          }
+        });
+        html += '<div class="expand-section">'
+          + '<button class="expand-header" onclick="toggleExpand(\'' + q.id + '\')">'
+          + '<div class="expand-dot" style="background:' + (hasAny ? 'var(--accent)' : 'var(--text-dim)') + '"></div>'
+          + '<span class="expand-label">' + q.label + '</span>'
+          + '<span class="expand-arrow" id="arrow-' + q.id + '">\u25B6</span></button>'
+          + '<div class="expand-body" id="body-' + q.id + '" style="display:none">'
+          + (answers || '<p class="empty-note">No responses yet.</p>') + '</div></div>';
+      });
+    }
+
+    if (tab === 'goals') {
+      var goalRows = '', familyRows = '';
+      responded.forEach(function(m) {
+        var g = allData[m].accomplish;
+        if (g && g.trim()) goalRows += '<div class="goal-row"><span class="goal-name" style="color:' + COLORS[m] + '">' + m + ':</span> ' + esc(g) + '</div>';
+        var f = allData[m].as_family;
+        if (f && f.trim()) familyRows += '<div class="goal-row"><span class="goal-name" style="color:' + COLORS[m] + '">' + m + ':</span> ' + esc(f) + '</div>';
+      });
+      html += '<div class="goals-card"><div class="goals-accent"></div>'
+        + '<div class="goals-title">What We Want to Accomplish</div>'
+        + '<div class="goals-sub">In the next 15\u201318 months</div>'
+        + (goalRows || '<p class="empty-note">No goals yet.</p>')
+        + '<div class="goals-title" style="margin-top:28px">What We Want to Do as a Family</div>'
+        + '<div class="goals-sub">Before Ben leaves</div>'
+        + (familyRows || '<p class="empty-note">No responses yet.</p>') + '</div>';
+    }
+
+    if (tab === 'messages') {
+      var anyMessages = false;
+      FAMILY.forEach(function(target) {
+        var msgs = '';
+        FAMILY.forEach(function(sender) {
+          if (sender === target || !allData[sender]) return;
+          var key = 'know_' + target.toLowerCase();
+          var txt = allData[sender][key];
+          if (txt && txt.trim()) {
+            anyMessages = true;
+            msgs += '<div class="msg-card"><div class="answer-from" style="color:' + COLORS[sender] + '">' + sender + '</div>'
+              + '<div class="msg-text">\u201C' + esc(txt) + '\u201D</div></div>';
+          }
+        });
+        if (msgs) {
+          html += '<div class="messages-group" style="border-color:' + COLORS[target] + '18">'
+            + '<div class="messages-accent" style="background:' + COLORS[target] + '"></div>'
+            + '<div class="messages-for" style="color:' + COLORS[target] + '">What the family wants ' + target + ' to know</div>'
+            + msgs + '</div>';
+        }
+      });
+      if (!anyMessages) html += '<p class="empty-note">No messages yet \u2014 responses will appear as family members complete the questionnaire.</p>';
+    }
+
+    document.getElementById('summaryContent').innerHTML = html;
+  }
+
+  function renderSummaryTab(tab) { renderSummary(tab); }
+
+  function toggleExpand(id) {
+    var body = document.getElementById('body-' + id);
+    var arrow = document.getElementById('arrow-' + id);
+    if (body.style.display === 'none') {
+      body.style.display = 'block';
+      arrow.classList.add('open');
+    } else {
+      body.style.display = 'none';
+      arrow.classList.remove('open');
+    }
+  }
+
+  function esc(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---- Init ----
+  (async function() {
+    await loadAll();
+    renderWelcome();
+    showScreen('welcome');
+  })();
+</script>
+</body>
+</html>
